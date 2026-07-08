@@ -134,7 +134,7 @@ export function FeaturesSection() {
 
         {/* Registration Form */}
         <div
-          className={`max-w-2xl transition-all duration-700 delay-200 ${
+          className={`max-w-2xl mx-auto transition-all duration-700 delay-200 ${
             isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
           }`}
         >

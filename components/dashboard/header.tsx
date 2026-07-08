@@ -4,7 +4,6 @@ import React from "react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { useTheme } from "next-themes"
-import { useSession } from "next-auth/react"
 import { Bell, ChevronDown, Sun, Moon, X } from "lucide-react"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
@@ -28,7 +27,11 @@ export const navItems = [
 export function Header() {
   const pathname = usePathname()
   const { theme, setTheme } = useTheme()
-  const { data: session } = useSession()
+
+  const user = {
+  name: "User",
+  email: "user@example.com",
+}
   const [mounted, setMounted] = React.useState(false)
   const [mobileMenuOpen, setMobileMenuOpen] = React.useState(false)
 
@@ -133,23 +136,15 @@ export function Header() {
                 <Avatar className="h-9 w-9">
                   <AvatarImage src="/profile.jfif" />
                   <AvatarFallback>
-                    {session?.user?.name
-                      ?.split(" ")
-                      .map((n) => n[0])
-                      .join("")
-                      .toUpperCase()
-                      .slice(0, 2) || "U"}
+                    {getInitials(user.name)}
                   </AvatarFallback>
                 </Avatar>
                 <div className="hidden sm:block text-left">
                   <p className="text-sm font-medium capitalize">
-                    {session?.user?.name
-                      ?.split(" ")
-                      .map((word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
-                      .join(" ") || "User"}
+                    {user.name}
                   </p>
                   <p className="text-xs text-muted-foreground lowercase">
-                    {session?.user?.email?.toLowerCase() || ""}
+                  {user.email}
                   </p>
                 </div>
                 <ChevronDown className="w-4 h-4 text-muted-foreground hidden sm:block" />
