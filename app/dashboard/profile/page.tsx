@@ -1,7 +1,6 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { useSession } from "next-auth/react"
 import { PageHeader } from "@/components/dashboard/page-header"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
@@ -32,27 +31,24 @@ function formatCreatedAt(createdAt?: string) {
 }
 
 export default function ProfilePage() {
-  const { data: session } = useSession()
   const [profile, setProfile] = useState({
     full_name: "",
     email: "",
   })
 
-  // Populate profile with the logged-in user's session data
-  useEffect(() => {
-    if (session?.user) {
-      setProfile(prev => ({
-        ...prev,
-        full_name: session.user?.name ?? "",
-        email: session.user?.email ?? "",
-      }))
-    }
-  }, [session])
-
-  const handleChange = (field: string, value: string) => {
-    setProfile(prev => ({ ...prev, [field]: value }))
+  const user = {
+    name: "User",
+    email: "user@example.com",
+    createdAt: new Date().toISOString(),
   }
 
+  useEffect(() => {
+    setProfile({
+      full_name: user.name,
+      email: user.email,
+    })
+  }, [])
+  
   return (
     <>
       <PageHeader
@@ -83,7 +79,7 @@ export default function ProfilePage() {
                 </div>
                 <div className="flex items-center gap-3">
                   <Calendar className="w-4 h-4 text-muted-foreground" />
-                  <span className="text-sm">Joined {formatCreatedAt(session?.user?.createdAt)}</span>
+        <span className="text-sm"> Joined {formatCreatedAt(user.createdAt)}</span>
                 </div>
               </div>
             </div>
