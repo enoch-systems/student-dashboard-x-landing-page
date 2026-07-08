@@ -50,12 +50,12 @@ export function FooterSection() {
             {/* Brand Column */}
             <div className="col-span-2">
               <a href="#" className="inline-flex items-center gap-2 mb-6">
-                <span className="text-2xl font-display">Optimus</span>
-                <span className="text-xs text-muted-foreground font-mono">TM</span>
+                <span className="text-2xl font-display">Byund</span>
+                <span className="text-xs text-muted-foreground font-mono">Labs.</span>
               </a>
 
               <p className="text-muted-foreground leading-relaxed mb-8 max-w-xs">
-                Your gateway to academic excellence. Register, manage forms, and access resources all in one place.
+                Learn with clarity through real-world analogies. Build actual products, not just theory.
               </p>
 
               {/* Social Links */}
@@ -98,19 +98,13 @@ export function FooterSection() {
             ))}
           </div>
         </div>
-
+      
         {/* Bottom Bar */}
         <div className="py-8 border-t border-foreground/10 flex flex-col md:flex-row items-center justify-between gap-4">
           <p className="text-sm text-muted-foreground">
-          2025 Optimus Student Portal. All rights reserved.
+            © 2026 Byuund Technologies. All rights reserved.
           </p>
 
-          <div className="flex items-center gap-4 text-sm text-muted-foreground">
-            <span className="flex items-center gap-2">
-              <span className="w-2 h-2 rounded-full bg-green-500" />
-              All systems operational
-            </span>
-          </div>
         </div>
       </div>
     </footer>
