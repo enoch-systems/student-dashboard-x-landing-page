@@ -81,25 +81,40 @@ export function FeaturesSection() {
     return () => observer.disconnect();
   }, []);
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setIsSubmitting(true);
-    
-    // Simulate form submission
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    
-    console.log("Form submitted:", formData);
-    alert("Registration successful! We'll contact you soon.");
-    
-    // Reset form
-    setFormData({
-      fullName: "",
-      email: "",
-      phone: "",
-      course: "",
+ const handleSubmit = async (e: React.FormEvent) => {
+  e.preventDefault();
+  setIsSubmitting(true);
+
+  try {
+    const response = await fetch("/api/students", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(formData),
     });
+
+    const result = await response.json();
+
+    if (result.success) {
+      alert("Registration successful! We'll contact you soon.");
+
+      setFormData({
+        fullName: "",
+        email: "",
+        phone: "",
+        course: "",
+      });
+    } else {
+      alert("Registration failed. Please try again.");
+    }
+  } catch (error) {
+    console.error(error);
+    alert("Something went wrong. Please try again.");
+  } finally {
     setIsSubmitting(false);
-  };
+  }
+};
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     setFormData({
