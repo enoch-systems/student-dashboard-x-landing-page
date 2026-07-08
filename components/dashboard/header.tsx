@@ -74,11 +74,12 @@ export function Header() {
     <>
       <header className="flex items-center justify-between mb-8">
         <div className="flex items-center gap-2">
-          <Link href="/dashboard" className="flex items-center gap-2">
+          <div className="flex items-center gap-2">
             <button
-              className={`flex flex-col gap-1 md:hidden cursor-pointer ${mobileMenuOpen ? "hidden" : ""}`}
+              type="button"
+              className={`flex flex-col gap-1 md:hidden cursor-pointer p-1 ${mobileMenuOpen ? "hidden" : ""}`}
               onClick={(e) => {
-                e.preventDefault()
+                e.stopPropagation()
                 setMobileMenuOpen(true)
               }}
               aria-label="Open menu"
@@ -87,13 +88,15 @@ export function Header() {
               <div className="w-5 h-0.5 bg-foreground" />
               <div className="w-3 h-0.5 bg-foreground" />
             </button>
-            <div className="hidden md:flex flex-col gap-1">
-              <div className="w-5 h-0.5 bg-foreground" />
-              <div className="w-5 h-0.5 bg-foreground" />
-              <div className="w-3 h-0.5 bg-foreground" />
-            </div>
-            <span className="text-lg md:text-xl font-bold tracking-tight">Beeyund Academy</span>
-          </Link>
+            <Link href="/dashboard" className="flex items-center gap-2">
+              <div className="hidden md:flex flex-col gap-1">
+                <div className="w-5 h-0.5 bg-foreground" />
+                <div className="w-5 h-0.5 bg-foreground" />
+                <div className="w-3 h-0.5 bg-foreground" />
+              </div>
+              <span className="text-lg md:text-xl font-bold tracking-tight">Beeyund Academy</span>
+            </Link>
+          </div>
         </div>
 
         <nav className="hidden md:flex items-center bg-card rounded-full px-2 py-1.5 border border-border">
@@ -164,14 +167,15 @@ export function Header() {
       </header>
      
       {/* Mobile menu overlay */}
-      <div className="fixed inset-0 z-40 md:hidden">
-        <div
-          className={`absolute inset-0 bg-black/50 backdrop-blur-sm transition-opacity duration-300 ${mobileMenuOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}
-          onClick={() => setMobileMenuOpen(false)}
-        />
-        <div className={`fixed top-0 left-0 z-[70] h-full w-full max-w-[280px] border-r border-border bg-background/95 backdrop-blur-xl shadow-2xl transition-all duration-500 ease-in-out ${mobileMenuOpen ? 'translate-x-0 opacity-100' : 'translate-x-full opacity-0 pointer-events-none'}`}>
+      {mobileMenuOpen && (
+        <div className="fixed inset-0 z-40 md:hidden">
+          <div
+            className="absolute inset-0 bg-black/50 backdrop-blur-sm"
+            onClick={() => setMobileMenuOpen(false)}
+          />
+          <div className="fixed top-0 right-0 md:left-0 z-[70] h-full w-full max-w-[280px] border-l md:border-r border-border bg-background/95 backdrop-blur-xl shadow-2xl">
             <div className="flex items-center justify-between border-b border-border px-5 h-16">
-            <Link href="/dashboard" className="flex items-center gap-2" onClick={() => setMobileMenuOpen(false)}>
+              <Link href="/dashboard" className="flex items-center gap-2" onClick={() => setMobileMenuOpen(false)}>
                 <span className="text-lg font-bold tracking-tight">Beeyund Academy</span>
               </Link>
               <Button variant="ghost" size="icon" onClick={() => setMobileMenuOpen(false)} className="rounded-full">
@@ -197,6 +201,7 @@ export function Header() {
             </div>
           </div>
         </div>
+      )}
     </>
   )
 }
