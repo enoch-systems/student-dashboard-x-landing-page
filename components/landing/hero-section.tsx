@@ -37,8 +37,21 @@ export function HeroSection() {
 
   return (
     <section className="relative min-h-screen flex flex-col justify-center overflow-hidden">
+      {/* Background image with fade */}
+      <div className="absolute right-0 top-1/2 -translate-y-1/2 w-[500px] h-[500px] lg:w-[700px] lg:h-[700px] pointer-events-none">
+        <img
+          src="https://res.cloudinary.com/djdbcoyot/image/upload/v1780951883/hukdooivxlvjfk7pcuvq.png"
+          alt=""
+          className="w-full h-full object-cover opacity-30"
+          style={{
+            maskImage: "linear-gradient(to bottom, black 50%, transparent 100%)",
+            WebkitMaskImage: "linear-gradient(to bottom, black 50%, transparent 100%)",
+          }}
+        />
+      </div>
+
       {/* Animated sphere background */}
-      <div className="absolute right-0 top-1/2 -translate-y-1/2 w-[600px] h-[600px] lg:w-[800px] lg:h-[800px] opacity-40 pointer-events-none">
+      <div className="absolute right-0 top-1/2 -translate-y-1/2 w-[800px] h-[800px] lg:w-[1100px] lg:h-[1100px] opacity-40 pointer-events-none">
         <AnimatedSphere />
       </div>
       
@@ -68,7 +81,7 @@ export function HeroSection() {
         ))}
       </div>
       
-      <div className="relative z-10 max-w-[1400px] mx-auto px-6 lg:px-12 py-32 lg:py-40">
+      <div className="relative z-10 max-w-[1400px] mx-auto px-6 lg:px-12 py-16 lg:py-32">
         {/* Eyebrow */}
         <div 
           className={`mb-8 transition-all duration-700 ${
@@ -120,7 +133,7 @@ export function HeroSection() {
             <Button 
               size="lg" 
               onClick={scrollToRegister}
-              className="bg-foreground hover:bg-foreground/90 text-background px-6 md:px-8 h-12 md:h-14 text-sm md:text-base rounded-full group"
+              className="bg-foreground hover:bg-foreground/90 text-background px-6 md:px-8 h-12 md:h-14 text-sm md:text-base rounded-full group cursor-pointer"
             >
               Start your journey
               <ArrowRight className="w-4 h-4 ml-2 transition-transform group-hover:translate-x-1" />
@@ -140,16 +153,16 @@ export function HeroSection() {
           {[...Array(2)].map((_, i) => (
             <div key={i} className="flex gap-16">
                 {[
-                  { value: "10K+", label: "students registered", company: "UNIVERSITY" },
-                  { value: "95%", label: "satisfaction rate", company: "STUDENTS" },
-                  { value: "100+", label: "programs offered", company: "DEPARTMENTS" },
-                  { value: "24/7", label: "portal access", company: "SUPPORT" },
+                  { value: "Hands-on training", label: "real-world projects", sublabel: "build actual products" },
+                  { value: "Expert-led", label: "bootcamp experience", sublabel: "learn from practitioners" },
+                  { value: "Career support", label: "job placement guidance", sublabel: "land your dream role" },
+                  { value: "Flexible", label: "learning schedule", sublabel: "study at your pace" },
                 ].map((stat) => (
-                <div key={`${stat.company}-${i}`} className="flex items-baseline gap-4">
+                <div key={`${stat.label}-${i}`} className="flex items-baseline gap-4">
                   <span className="text-4xl lg:text-5xl font-display">{stat.value}</span>
                   <span className="text-sm text-muted-foreground">
                     {stat.label}
-                    <span className="block font-mono text-xs mt-1">{stat.company}</span>
+                    <span className="block font-mono text-xs mt-1">{stat.sublabel}</span>
                   </span>
                 </div>
               ))}
