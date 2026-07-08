@@ -5,21 +5,15 @@ import { AnimatedWave } from "./animated-wave";
 
 const footerLinks = {
   Programs: [
-    { name: "Features", href: "#features" },
-    { name: "Pricing", href: "#pricing" },
-    { name: "Resources", href: "#resources" },
-    { name: "FAQ", href: "#faq" },
+    { name: "Fullstack Engineering", href: "#" },
+    { name: "Backend Engineering", href: "#" },
   ],
   Students: [
     { name: "Registration", href: "#" },
-    { name: "Forms", href: "#" },
-    { name: "Dashboard", href: "#" },
     { name: "Support", href: "#" },
   ],
   Resources: [
     { name: "Documentation", href: "#" },
-    { name: "Guides", href: "#" },
-    { name: "Blog", href: "#" },
     { name: "Contact", href: "#" },
   ],
   Legal: [
@@ -30,9 +24,9 @@ const footerLinks = {
 };
 
 const socialLinks = [
-  { name: "Twitter", href: "#" },
-  { name: "GitHub", href: "#" },
-  { name: "LinkedIn", href: "#" },
+  { name: "Facebook", href: "#" },
+  { name: "Instagram", href: "#" },
+  { name: "TikTok", href: "#" },
 ];
 
 export function FooterSection() {
@@ -50,9 +44,10 @@ export function FooterSection() {
             {/* Brand Column */}
             <div className="col-span-2">
               <a href="#" className="inline-flex items-center gap-2 mb-6">
-                <span className="text-2xl font-display">Byund</span>
+                <span className="text-2xl font-display">Byuund</span>
                 <span className="text-xs text-muted-foreground font-mono">Labs.</span>
               </a>
+              
 
               <p className="text-muted-foreground leading-relaxed mb-8 max-w-xs">
                 Learn with clarity through real-world analogies. Build actual products, not just theory.
