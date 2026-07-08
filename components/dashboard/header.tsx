@@ -32,12 +32,7 @@ export function Header() {
   name: "User",
   email: "user@example.com",
 }
-  const [mounted, setMounted] = React.useState(false)
   const [mobileMenuOpen, setMobileMenuOpen] = React.useState(false)
-
-  React.useEffect(() => {
-    setMounted(true)
-  }, [])
 
   React.useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -119,20 +114,17 @@ export function Header() {
           <Button variant="ghost" size="icon" className="rounded-full">
             <Bell className="w-5 h-5" />
           </Button>
-          {mounted && (
-            <Button
-              variant="ghost"
-              size="icon"
-              className="rounded-full"
-              onClick={() => setTheme(theme === "light" ? "dark" : "light")}
-            >
-              {theme === "light" ? (
-                <Moon className="w-5 h-5" />
-              ) : (
-                <Sun className="w-5 h-5" />
-              )}
-            </Button>
-          )}
+          <Button
+            variant="ghost"
+            size="icon"
+            className="rounded-full"
+            onClick={() => setTheme(theme === "light" ? "dark" : "light")}
+            suppressHydrationWarning
+          >
+            <span suppressHydrationWarning>
+              {theme === "light" ? <Moon className="w-5 h-5" /> : <Sun className="w-5 h-5" />}
+            </span>
+          </Button>
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <button className="flex items-center gap-2 cursor-pointer outline-none focus:outline-none focus:ring-0">
