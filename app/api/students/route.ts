@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server"
 import { prisma } from "@/lib/prisma"
+import { broadcast } from "@/lib/events"
 
 export async function POST(request: Request) {
   try {
@@ -16,6 +17,8 @@ export async function POST(request: Request) {
       },
     })
 
+  broadcast(student)
+  
     return NextResponse.json(
       { success: true, data: student },
       { status: 201 }

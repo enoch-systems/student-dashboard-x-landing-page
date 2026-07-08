@@ -28,22 +28,30 @@ export function Header() {
   const pathname = usePathname()
   const { theme, setTheme } = useTheme()
 
-  const user = {
-  name: "User",
-  email: "user@example.com",
-}
+  const [mounted, setMounted] = React.useState(false)
   const [mobileMenuOpen, setMobileMenuOpen] = React.useState(false)
+
+  React.useEffect(() => {
+    setMounted(true)
+  }, [])
+
+  const user = {
+    name: "User",
+    email: "user@example.com",
+  }
 
   React.useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === "Escape") setMobileMenuOpen(false)
     }
+
     if (mobileMenuOpen) {
       document.addEventListener("keydown", handleKeyDown)
       document.body.style.overflow = "hidden"
     } else {
       document.body.style.overflow = ""
     }
+
     return () => {
       document.removeEventListener("keydown", handleKeyDown)
       document.body.style.overflow = ""
@@ -59,7 +67,7 @@ export function Header() {
   const getInitials = (name: string) => {
     return name
       .split(" ")
-      .map(n => n[0])
+      .map((n) => n[0])
       .join("")
       .toUpperCase()
       .slice(0, 2)
@@ -72,7 +80,9 @@ export function Header() {
           <div className="flex items-center gap-2">
             <button
               type="button"
-              className={`flex flex-col gap-1 md:hidden cursor-pointer p-1 ${mobileMenuOpen ? "hidden" : ""}`}
+              className={`flex flex-col gap-1 md:hidden cursor-pointer p-1 ${
+                mobileMenuOpen ? "hidden" : ""
+              }`}
               onClick={(e) => {
                 e.stopPropagation()
                 setMobileMenuOpen(true)
@@ -83,13 +93,17 @@ export function Header() {
               <div className="w-5 h-0.5 bg-foreground" />
               <div className="w-3 h-0.5 bg-foreground" />
             </button>
+
             <Link href="/dashboard" className="flex items-center gap-2">
               <div className="hidden md:flex flex-col gap-1">
                 <div className="w-5 h-0.5 bg-foreground" />
                 <div className="w-5 h-0.5 bg-foreground" />
                 <div className="w-3 h-0.5 bg-foreground" />
               </div>
-              <span className="text-lg md:text-xl font-bold tracking-tight">Beeyund Academy</span>
+
+              <span className="text-lg md:text-xl font-bold tracking-tight">
+                Beeyund Academy
+              </span>
             </Link>
           </div>
         </div>
@@ -109,47 +123,56 @@ export function Header() {
             </Link>
           ))}
         </nav>
-      
+
         <div className="flex items-center gap-4">
           <Button variant="ghost" size="icon" className="rounded-full">
             <Bell className="w-5 h-5" />
           </Button>
+
           <Button
             variant="ghost"
             size="icon"
             className="rounded-full"
             onClick={() => setTheme(theme === "light" ? "dark" : "light")}
-            suppressHydrationWarning
           >
-            <span suppressHydrationWarning>
-              {theme === "light" ? <Moon className="w-5 h-5" /> : <Sun className="w-5 h-5" />}
-            </span>
+            {!mounted ? (
+              <div className="w-5 h-5" />
+            ) : theme === "light" ? (
+              <Moon className="w-5 h-5" />
+            ) : (
+              <Sun className="w-5 h-5" />
+            )}
           </Button>
+
           <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <button className="flex items-center gap-2 cursor-pointer outline-none focus:outline-none focus:ring-0">
-                <Avatar className="h-9 w-9">
-                  <AvatarImage src="/profile.jfif" />
-                  <AvatarFallback>
-                    {getInitials(user.name)}
-                  </AvatarFallback>
-                </Avatar>
-                <div className="hidden sm:block text-left">
-                  <p className="text-sm font-medium capitalize">
-                    {user.name}
-                  </p>
-                  <p className="text-xs text-muted-foreground lowercase">
+            <DropdownMenuTrigger className="flex items-center gap-2 cursor-pointer outline-none focus:outline-none focus:ring-0">
+              <Avatar className="h-9 w-9">
+                <AvatarImage src="/profile.jfif" />
+                <AvatarFallback>
+                  {getInitials(user.name)}
+                </AvatarFallback>
+              </Avatar>
+
+              <div className="hidden sm:block text-left">
+                <p className="text-sm font-medium capitalize">
+                  {user.name}
+                </p>
+
+                <p className="text-xs text-muted-foreground lowercase">
                   {user.email}
-                  </p>
-                </div>
-                <ChevronDown className="w-4 h-4 text-muted-foreground hidden sm:block" />
-              </button>
+                </p>
+              </div>
+
+              <ChevronDown className="w-4 h-4 text-muted-foreground hidden sm:block" />
             </DropdownMenuTrigger>
+
             <DropdownMenuContent align="end" className="w-48">
               <DropdownMenuItem asChild>
                 <Link href="/dashboard/profile">Settings</Link>
               </DropdownMenuItem>
+
               <DropdownMenuSeparator />
+
               <DropdownMenuItem className="text-destructive cursor-pointer">
                 Log out
               </DropdownMenuItem>
@@ -157,23 +180,36 @@ export function Header() {
           </DropdownMenu>
         </div>
       </header>
-     
-      {/* Mobile menu overlay */}
+
       {mobileMenuOpen && (
         <div className="fixed inset-0 z-40 md:hidden">
           <div
             className="absolute inset-0 bg-black/50 backdrop-blur-sm"
             onClick={() => setMobileMenuOpen(false)}
           />
+
           <div className="fixed top-0 right-0 md:left-0 z-[70] h-full w-full max-w-[280px] border-l md:border-r border-border bg-background/95 backdrop-blur-xl shadow-2xl">
             <div className="flex items-center justify-between border-b border-border px-5 h-16">
-              <Link href="/dashboard" className="flex items-center gap-2" onClick={() => setMobileMenuOpen(false)}>
-                <span className="text-lg font-bold tracking-tight">Beeyund Academy</span>
+              <Link
+                href="/dashboard"
+                className="flex items-center gap-2"
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                <span className="text-lg font-bold tracking-tight">
+                  Beeyund Academy
+                </span>
               </Link>
-              <Button variant="ghost" size="icon" onClick={() => setMobileMenuOpen(false)} className="rounded-full">
+
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => setMobileMenuOpen(false)}
+                className="rounded-full"
+              >
                 <X className="w-5 h-5" />
               </Button>
             </div>
+
             <div className="flex flex-col gap-1 p-3">
               {navItems.map((item) => (
                 <Button
@@ -181,11 +217,15 @@ export function Header() {
                   variant="ghost"
                   className={cn(
                     "justify-start rounded-full px-4 py-2 text-sm font-medium transition-colors",
-                    isActive(item.href) && "bg-black text-white dark:bg-white dark:text-black"
+                    isActive(item.href) &&
+                      "bg-black text-white dark:bg-white dark:text-black"
                   )}
                   asChild
                 >
-                  <Link href={item.href} onClick={() => setMobileMenuOpen(false)}>
+                  <Link
+                    href={item.href}
+                    onClick={() => setMobileMenuOpen(false)}
+                  >
                     {item.label}
                   </Link>
                 </Button>

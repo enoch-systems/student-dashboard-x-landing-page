@@ -5,23 +5,45 @@ import { ChevronDown } from "lucide-react"
 import { useEffect, useState } from "react"
 
 
+
 export function HomeStudents() {
   const [courseFilter, setCourseFilter] = useState("")
   const [paymentFilter, setPaymentFilter] = useState("")
   const [students, setStudents] = useState<any[]>([])
   const [openDropdown, setOpenDropdown] = useState<number | null>(null)
 
-  useEffect(() => {
+useEffect(() => {
   async function fetchStudents() {
-    const response = await fetch("/api/students")
-    const result = await response.json()
+    try {
+      const response = await fetch("/api/students")
+      const result = await response.json()
 
-    if (result.success) {
-      setStudents(result.data)
+      if (result.success) {
+        setStudents(result.data)
+      }
+    } catch (error) {
+      console.error("Failed to fetch students:", error)
     }
   }
 
   fetchStudents()
+
+  console.log("Starting SSE connection")
+
+  const eventSource = new EventSource("/api/students/events")
+
+  eventSource.onmessage = (event) => {
+    console.log("SSE event received:", event.data)
+    fetchStudents()
+  }
+
+  eventSource.onerror = (error) => {
+    console.error("SSE connection error:", error)
+  }
+
+  return () => {
+    eventSource.close()
+  }
 }, [])
 
   const getPaymentColor = (status: string) => {
@@ -39,34 +61,34 @@ export function HomeStudents() {
     }
   }
 
-const updatePaymentStatus = async (index: number, status: string) => {
-  const student = students[index]
+  const updatePaymentStatus = async (index: number, status: string) => {
+    const student = students[index]
 
-  const response = await fetch(`/api/students/${student.id}`, {
-    method: "PATCH",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      paymentStatus: status,
-    }),
-  })
-
-  const result = await response.json()
-
-  if (result.success) {
-    setStudents(prev => {
-      const updated = [...prev]
-      updated[index] = result.data
-      return updated
+    const response = await fetch(`/api/students/${student.id}`, {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        paymentStatus: status,
+      }),
     })
+
+    const result = await response.json()
+
+    if (result.success) {
+      setStudents(prev => {
+        const updated = [...prev]
+        updated[index] = result.data
+        return updated
+      })
+    }
+
+    setOpenDropdown(null)
   }
 
-  setOpenDropdown(null)
-}
-
   const filteredStudents = students.filter(student => {
-    const matchCourse = !courseFilter || 
+    const matchCourse = !courseFilter ||
       (courseFilter === "fullstack" && student.course === "Full stack development") ||
       (courseFilter === "backend" && student.course === "Backend engineering")
     const matchPayment = !paymentFilter ||
@@ -82,15 +104,15 @@ const updatePaymentStatus = async (index: number, status: string) => {
   return (
     <Card className="bg-card border-border h-full">
       <CardHeader className="flex flex-row items-center justify-between pb-2">
-  <div>
-    <CardTitle className="text-base font-medium text-foreground">
-      Student Records
-    </CardTitle>
-    <p className="text-xs text-muted-foreground">
-  A centralized table for viewing, organizing, and managing student information and payment records.
-</p>
-  </div>
-</CardHeader>
+        <div>
+          <CardTitle className="text-base font-medium text-foreground">
+            Student Records
+          </CardTitle>
+          <p className="text-xs text-muted-foreground">
+            A centralized table for viewing, organizing, and managing student information and payment records.
+          </p>
+        </div>
+      </CardHeader>
       <CardContent>
         <div className="w-full">
           <div className="overflow-x-auto">
@@ -121,24 +143,24 @@ const updatePaymentStatus = async (index: number, status: string) => {
                     <td className="py-3 pr-4">
                       <p className="text-sm text-foreground">{student.course}</p>
                     </td>
-                     <td className="py-3 pr-4">
-                       <p className="text-xs text-muted-foreground">
-                         {new Date(student.dateJoined).toLocaleDateString('en-NG', {
-                           weekday: 'long',
-                           year: 'numeric',
-                           month: 'short',
-                           day: '2-digit'
-                         })}
-                       </p>
-                       <p className="text-[10px] text-muted-foreground">
-                         {new Date(student.dateJoined).toLocaleString('en-NG', {
-                           hour: 'numeric',
-                           minute: '2-digit',
-                           hour12: true,
-                           timeZone: 'Africa/Lagos'
-                         })}
-                       </p>
-                     </td>
+                    <td className="py-3 pr-4">
+                      <p className="text-xs text-muted-foreground">
+                        {new Date(student.dateJoined).toLocaleDateString('en-NG', {
+                          weekday: 'long',
+                          year: 'numeric',
+                          month: 'short',
+                          day: '2-digit'
+                        })}
+                      </p>
+                      <p className="text-[10px] text-muted-foreground">
+                        {new Date(student.dateJoined).toLocaleString('en-NG', {
+                          hour: 'numeric',
+                          minute: '2-digit',
+                          hour12: true,
+                          timeZone: 'Africa/Lagos'
+                        })}
+                      </p>
+                    </td>
                     <td className="py-3 relative">
                       <button
                         onClick={() => setOpenDropdown(openDropdown === index ? null : index)}
