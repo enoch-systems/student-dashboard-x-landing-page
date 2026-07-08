@@ -1,19 +1,15 @@
 "use client"
 
 import { useState } from "react"
-import { useSession } from "next-auth/react"
 import { MetricCard } from "@/components/dashboard/metric-card"
 import { PageHeader } from "@/components/dashboard/page-header"
 import { HomeStudents } from "@/components/dashboard/home-students"
 import { Calendar, DollarSign, Users } from "lucide-react"
 
 export default function DashboardPage() {
-  const { data: session } = useSession()
   const [timeRange, setTimeRange] = useState("week")
   
-  // Get first name from session user with first letter capitalized only
-  const rawFirstName = session?.user?.name?.split(" ")[0] || "User"
-  const firstName = rawFirstName.charAt(0).toUpperCase() + rawFirstName.slice(1).toLowerCase()
+  const firstName = "User"
   
   return (
     <>
