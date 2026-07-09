@@ -30,6 +30,7 @@ export function Header() {
 
   const [mounted, setMounted] = React.useState(false)
   const [mobileMenuOpen, setMobileMenuOpen] = React.useState(false)
+  const [menuVisible, setMenuVisible] = React.useState(false)
 
   React.useEffect(() => {
     setMounted(true)
@@ -42,13 +43,18 @@ export function Header() {
 
   React.useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "Escape") setMobileMenuOpen(false)
+      if (e.key === "Escape") {
+        setMenuVisible(false)
+        setTimeout(() => setMobileMenuOpen(false), 300)
+      }
     }
 
     if (mobileMenuOpen) {
       document.addEventListener("keydown", handleKeyDown)
       document.body.style.overflow = "hidden"
+      setTimeout(() => setMenuVisible(true), 10)
     } else {
+      setMenuVisible(false)
       document.body.style.overflow = ""
     }
 
@@ -171,11 +177,16 @@ export function Header() {
       {mobileMenuOpen && (
         <div className="fixed inset-0 z-40 md:hidden">
           <div
-            className="absolute inset-0 bg-black/50 backdrop-blur-sm"
-            onClick={() => setMobileMenuOpen(false)}
+            className={`absolute inset-0 bg-black/50 backdrop-blur-sm transition-opacity duration-300 ${menuVisible ? "opacity-100" : "opacity-0 pointer-events-none"}`}
+            onClick={() => {
+              setMenuVisible(false)
+              setTimeout(() => setMobileMenuOpen(false), 300)
+            }}
           />
 
-          <div className="fixed top-0 right-0 z-50 h-full w-full max-w-[280px] border-l border-border bg-background/95 backdrop-blur-xl shadow-2xl">
+          <div 
+            className={`fixed top-0 left-0 z-50 h-full w-full max-w-[280px] border-r border-border bg-background/95 backdrop-blur-xl shadow-2xl transition-transform duration-300 ease-out ${menuVisible ? "translate-x-0" : "-translate-x-full"}`}
+          >
             <div className="flex items-center justify-between border-b border-border px-4 h-14">
               <Link
                 href="/dashboard"
