@@ -4,6 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { ChevronDown } from "lucide-react"
 import { useEffect, useRef, useState } from "react"
 import { useStudents } from "@/contexts/students-context"
+import Link from "next/link"
 
 export function HomeStudents() {
   const [courseFilter, setCourseFilter] = useState("")
@@ -41,6 +42,7 @@ export function HomeStudents() {
   })
 
   const isFilterActive = courseFilter || paymentFilter
+  const displayStudents = filteredStudents.slice(0, 7)
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -112,7 +114,7 @@ export function HomeStudents() {
                   </td>
                 </tr>
               ) : (
-                filteredStudents.map((student) => (
+                displayStudents.map((student) => (
                   <tr key={student.id} className="border-b border-border last:border-0">
                     <td className="py-3 pr-3">
                       <div className="flex items-center gap-3">
@@ -195,7 +197,7 @@ export function HomeStudents() {
 
         {/* ===== MOBILE CARDS (< sm) ===== */}
         <div className="sm:hidden space-y-2 px-3">
-          {filteredStudents.length === 0 ? (
+          {displayStudents.length === 0 ? (
             <p className="py-6 text-center text-xs text-muted-foreground">
               {isFilterActive
                 ? "No students in this category match"
@@ -203,6 +205,79 @@ export function HomeStudents() {
                   ? "No students registered yet."
                   : "No students in this category match"}
             </p>
+          ) : displayStudents.length < filteredStudents.length ? (
+            <>
+              {displayStudents.map((student) => (
+                <div key={student.id} className="border border-border rounded-lg p-3">
+                  <div className="flex items-start gap-3">
+                    <div className="w-10 h-10 rounded-full bg-muted overflow-hidden shrink-0">
+                      <img src="/profile.jfif" alt={student.fullName} className="w-full h-full object-cover" />
+                    </div>
+                    <div className="min-w-0 flex-1">
+                      <p className="text-sm font-medium text-foreground truncate">{student.fullName}</p>
+                      <p className="text-xs text-muted-foreground truncate">{student.email}</p>
+                      <p className="text-xs text-muted-foreground">{student.phone}</p>
+                      <p className="text-xs text-foreground mt-1">{student.course}</p>
+                      <p className="text-[10px] text-muted-foreground mt-0.5">
+                        {new Date(student.dateJoined).toLocaleDateString('en-NG', {
+                          weekday: 'short',
+                          month: 'short',
+                          day: '2-digit'
+                        })}
+                        {' '}
+                        {new Date(student.dateJoined).toLocaleString('en-NG', {
+                          hour: 'numeric',
+                          minute: '2-digit',
+                          hour12: true,
+                          timeZone: 'Africa/Lagos'
+                        })}
+                      </p>
+                    </div>
+                    <div className="relative shrink-0">
+                      <button
+                        onClick={() => setOpenDropdown(openDropdown === `mobile-${student.id}` ? null : `mobile-${student.id}`)}
+                        className={`inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium ${getPaymentColor(student.paymentStatus)}`}
+                      >
+                        <span className="truncate max-w-[70px]">{student.paymentStatus}</span>
+                        <ChevronDown className="w-3 h-3 shrink-0" />
+                      </button>
+                      {openDropdown === `mobile-${student.id}` && (
+                        <div className="absolute z-10 mt-1 w-44 bg-card border border-border rounded-md shadow-lg right-0">
+                          <div className="py-1">
+                            {["Fully Paid", "1st Installment", "2nd Installment", "Not paid"].map((status) => (
+                              <button
+                                key={status}
+                                onClick={() => updatePaymentStatus(student.id, status)}
+                                className="block w-full text-left px-4 py-2 text-xs hover:bg-muted"
+                              >
+                                <span className="inline-flex items-center gap-2">
+                                  <span className={`w-2 h-2 rounded-full ${
+                                    status === "Fully Paid" ? "bg-green-500" :
+                                    status === "1st Installment" ? "bg-yellow-500" :
+                                    status === "2nd Installment" ? "bg-blue-500" : "bg-red-500"
+                                  }`} />
+                                  {status === "Not paid" ? "Not Paid" : status}
+                                </span>
+                              </button>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              ))}
+              {filteredStudents.length > 7 && (
+                <div className="mt-3 text-center">
+                  <Link 
+                    href="/dashboard/students" 
+                    className="text-xs text-muted-foreground hover:text-foreground transition-colors underline underline-offset-4 cursor-pointer"
+                  >
+                    View All
+                  </Link>
+                </div>
+              )}
+            </>
           ) : (
             filteredStudents.map((student) => (
               <div key={student.id} className="border border-border rounded-lg p-3">
@@ -275,11 +350,16 @@ export function HomeStudents() {
           )}
         </div>
 
-        <div className="mt-4 text-center pb-3 sm:pb-0">
-          <button className="text-xs text-muted-foreground hover:text-foreground transition-colors underline underline-offset-4 cursor-pointer">
-            View More
-          </button>
-        </div>
+        {filteredStudents.length > 7 && (
+          <div className="mt-4 text-center pb-3 sm:pb-0">
+            <Link 
+              href="/dashboard/students" 
+              className="text-xs text-muted-foreground hover:text-foreground transition-colors underline underline-offset-4 cursor-pointer"
+            >
+              View All
+            </Link>
+          </div>
+        )}
       </CardContent>
     </Card>
   )
