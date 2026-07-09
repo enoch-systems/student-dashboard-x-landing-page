@@ -29,6 +29,7 @@ export default function StudentsPage() {
   const [students, setStudents] = useState<Student[]>([])
   const [openDropdown, setOpenDropdown] = useState<string | null>(null)
   const [selectedStudent, setSelectedStudent] = useState<Student | null>(null)
+  const [visiblePanel, setVisiblePanel] = useState(false)
   const [isConnected, setIsConnected] = useState(false)
   const [isLoading, setIsLoading] = useState(true)
 
@@ -255,7 +256,10 @@ export default function StudentsPage() {
                         )}
                       </td>
                       <td className="py-3 px-2">
-                        <Button variant="ghost" size="sm" className="h-8 gap-1 cursor-pointer text-xs" onClick={() => setSelectedStudent(student)}>
+                        <Button variant="ghost" size="sm" className="h-8 gap-1 cursor-pointer text-xs" onClick={() => {
+                          setSelectedStudent(student)
+                          setTimeout(() => setVisiblePanel(true), 10)
+                        }}>
                           <Eye className="w-3 h-3 sm:w-4 sm:h-4" />
                           <span className="hidden sm:inline">View</span>
                         </Button>
@@ -321,7 +325,10 @@ export default function StudentsPage() {
                             </div>
                           )}
                         </div>
-                        <Button variant="ghost" size="sm" className="h-8 gap-1 cursor-pointer text-xs" onClick={() => setSelectedStudent(student)}>
+                        <Button variant="ghost" size="sm" className="h-8 gap-1 cursor-pointer text-xs" onClick={() => {
+                          setSelectedStudent(student)
+                          setTimeout(() => setVisiblePanel(true), 10)
+                        }}>
                           <Eye className="w-3 h-3" />
                           View
                         </Button>
@@ -338,12 +345,23 @@ export default function StudentsPage() {
       {/* Student Details Slide-out Panel - responsive */}
       {selectedStudent && (
         <>
-          <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-40" onClick={() => setSelectedStudent(null)} />
-          <div className="fixed top-0 right-0 h-full w-full max-w-xs sm:max-w-sm lg:max-w-md bg-background border-l border-border shadow-2xl z-50 overflow-y-auto">
+          <div 
+            className={`fixed inset-0 bg-black/50 backdrop-blur-sm z-40 transition-opacity duration-300 ${visiblePanel ? "opacity-100" : "opacity-0 pointer-events-none"}`}
+            onClick={() => {
+              setVisiblePanel(false)
+              setTimeout(() => setSelectedStudent(null), 300)
+            }}
+          />
+          <div 
+            className={`fixed top-0 right-0 h-full w-full max-w-xs sm:max-w-sm lg:max-w-md bg-background border-l border-border shadow-2xl z-50 overflow-y-auto transition-transform duration-300 ease-out ${visiblePanel ? "translate-x-0" : "translate-x-full"}`}
+          >
             <div className="p-4 sm:p-6">
               <div className="flex items-center justify-between mb-4 sm:mb-6">
                 <h2 className="text-lg sm:text-xl font-semibold">Student Details</h2>
-                <Button variant="ghost" size="icon" onClick={() => setSelectedStudent(null)} className="h-8 w-8">
+                <Button variant="ghost" size="icon" onClick={() => {
+                  setVisiblePanel(false)
+                  setTimeout(() => setSelectedStudent(null), 300)
+                }} className="h-8 w-8">
                   <X className="w-4 h-4" />
                 </Button>
               </div>
