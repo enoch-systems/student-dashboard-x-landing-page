@@ -117,7 +117,7 @@ export default function StudentsPage() {
     return acc
   }, 0)
 
-  const displayStudents = students.slice(0, 5)
+  const displayStudents = students
 
   return (
     <>
