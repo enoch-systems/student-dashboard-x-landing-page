@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server"
 import { prisma } from "@/lib/prisma"
+import { broadcast } from "@/lib/events"
 
 export async function PATCH(
   request: Request,
@@ -19,7 +20,10 @@ export async function PATCH(
         paymentStatus,
       },
     })
-
+    broadcast({
+      type: "student.updated",
+      data: student,
+    })
     return NextResponse.json({
       success: true,
       data: student,

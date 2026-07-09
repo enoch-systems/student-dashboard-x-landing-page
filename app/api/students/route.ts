@@ -17,8 +17,11 @@ export async function POST(request: Request) {
       },
     })
 
-  broadcast(student)
-  
+   broadcast({
+  type: "student.created",
+  data: student,
+})
+
     return NextResponse.json(
       { success: true, data: student },
       { status: 201 }
