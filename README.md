@@ -63,20 +63,41 @@ The project is structured to allow future integration with authentication, datab
 student-dashboard-x-landing-page/
 
 ├── app/
+│   ├── globals.css
+│   ├── layout.tsx
+│   ├── page.tsx
+│   ├── api/
+│   │   └── students/
 │   ├── dashboard/
-│   ├── components/
-│   └── pages/
-
+│   │   ├── layout.tsx
+│   │   ├── page.tsx
+│   │   ├── email/
+│   │   ├── payment/
+│   │   ├── profile/
+│   │   ├── receipts/
+│   │   └── students/
 ├── components/
 │   ├── dashboard/
+│   │   └── home/
 │   ├── landing/
 │   └── ui/
-
+├── config/
+├── constants/
+├── contexts/
+│   └── students-context.tsx
 ├── hooks/
 ├── lib/
+│   ├── types/
+│   ├── utils.ts
+│   ├── prisma.ts
+│   └── events.ts
+├── prisma/
+│   └── schema.prisma
 ├── public/
-├── styles/
-└── package.json
+├── .env
+├── next.config.mjs
+├── package.json
+└── tsconfig.json
 ```
 
 ## Getting Started
@@ -189,26 +210,16 @@ User Action → Optimistic Update → API Call → Success/Revert
 ```text
 student-dashboard-x-landing-page/
 
-├── app/
-│   ├── api/
-│   │   ├── students/
-│   │   │   └── events/           # SSE endpoint
-│   │   └── students/[id]/        # PATCH for status updates
-│   ├── dashboard/
-│   │   └── page.tsx              # Dashboard root
-│   └── page.tsx                  # Landing page root
-├── components/
-│   ├── dashboard/
-│   │   └── home/
-│   │       └── home-students.tsx # Student table with dropdowns
-│   ├── landing/
-│   └── ui/
-│       └── [shadcn components]
+├── config/
+│   └── app.ts                    # App configuration
+├── constants/
+│   └── app.ts                    # App constants
 ├── contexts/
 │   └── students-context.tsx      # Global student state + SSE sync
 ├── hooks/
 │   ├── use-sse.ts                # Custom SSE hook
-│   └── use-mobile.ts             # Responsive breakpoint hook
+│   ├── use-mobile.ts             # Responsive breakpoint hook
+│   └── use-toast.ts              # Toast notification hook
 ├── lib/
 │   ├── events.ts                 # SSE message handlers
 │   ├── prisma.ts                 # Database client
@@ -217,9 +228,6 @@ student-dashboard-x-landing-page/
 │   └── utils.ts                  # cn() helper for class merging
 ├── prisma/
 │   └── schema.prisma             # Database schema
-├── public/
-├── app.json                      # Next.js config
-└── package.json
 ```
 
 ## Getting Started
