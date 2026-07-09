@@ -1,13 +1,12 @@
 "use client"
 
-import { useState, useCallback } from "react"
 import { MetricCard } from "@/components/dashboard/metric-card"
 import { PageHeader } from "@/components/dashboard/page-header"
 import { HomeStudents } from "@/components/dashboard/home-students"
-import { Calendar, DollarSign, Users, UserPlus } from "lucide-react"
-import Link from "next/link"
-import { useSSE } from "@/hooks/use-sse"
+import { Calendar, DollarSign, Users } from "lucide-react"
 import type { Student } from "@/lib/types/student"
+import { useState, useEffect } from "react"
+import { useStudents } from "@/contexts/students-context"
 
 interface DashboardClientProps {
   initialStudents: Student[]
@@ -15,45 +14,14 @@ interface DashboardClientProps {
 
 export function DashboardClient({ initialStudents }: DashboardClientProps) {
   const [timeRange, setTimeRange] = useState("week")
-  const [students, setStudents] = useState<Student[]>(initialStudents)
-  const [isConnected, setIsConnected] = useState(false)
+  const { students, setStudents, isConnected } = useStudents()
 
-  // SSE event handler — only handles real-time updates, no initial fetch needed
-  const handleSSEMessage = useCallback((event: MessageEvent) => {
-    try {
-      const message = JSON.parse(event.data)
-
-      switch (message.type) {
-        case "student.created":
-          setStudents((prev) => [message.data, ...prev])
-          break
-
-        case "student.updated":
-          setStudents((prev) =>
-            prev.map((student) =>
-              student.id === message.data.id ? message.data : student
-            )
-          )
-          break
-      }
-    } catch (error) {
-      console.error("Failed to parse SSE message:", error)
+  useEffect(() => {
+    if (initialStudents.length > 0) {
+      setStudents(initialStudents)
     }
   }, [])
 
-  useSSE("/api/students/events", {
-    onMessage: handleSSEMessage,
-    onOpen: () => {
-      setIsConnected(true)
-      console.log("SSE connection established on dashboard")
-    },
-    onError: () => {
-      setIsConnected(false)
-    },
-    enabled: true,
-  })
-
-  // Compute metrics from real data
   const totalStudents = students.length
   const enrolledStudents = students.filter(
     (s) => s.paymentStatus === "Fully Paid" || s.paymentStatus === "1st Installment" || s.paymentStatus === "2nd Installment"
@@ -86,49 +54,42 @@ export function DashboardClient({ initialStudents }: DashboardClientProps) {
 
   return (
     <>
-      <div className="flex items-start justify-between gap-4">
+      <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3 mb-4 sm:mb-6">
         <PageHeader
           title={`Welcome, ${firstName} 👋`}
           description="Students Dashboard - Track your student enrollment, revenue, and performance metrics."
         />
-        <div className="flex items-center gap-2 shrink-0">
+        <div className="flex items-center gap-2 shrink-0 self-start">
           <span
             className={`inline-block w-2 h-2 rounded-full ${
               isConnected ? "bg-green-500" : "bg-red-500"
             }`}
             title={isConnected ? "Live connected" : "Disconnected"}
           />
-          <Link
-            href="/#register"
-            className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium bg-black text-white dark:bg-white dark:text-black rounded-full hover:opacity-90 transition-opacity cursor-pointer"
-          >
-            <UserPlus className="w-3.5 h-3.5" />
-            Register Student
-          </Link>
         </div>
       </div>
 
-      {/* Metric Cards — rendered immediately from server data */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+      {/* Metric Cards */}
+      <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-3 lg:gap-4 mb-4 sm:mb-6">
         <MetricCard title="Total Students" value={String(totalStudents)} change="" isPositiveOutcome={true} icon={Users} />
-        <MetricCard title="Enrolled Students" value={String(enrolledStudents)} change="" isPositiveOutcome={true} icon={Users} />
+        <MetricCard title="Enrolled" value={String(enrolledStudents)} change="" isPositiveOutcome={true} icon={Users} />
         <MetricCard title="Total Revenue" value={totalRevenue} change="" isPositiveOutcome={true} icon={DollarSign} />
 
-        <div className="bg-card border border-border rounded-lg p-5 cursor-pointer hover:shadow-md transition-shadow">
-          <div className="flex items-start justify-between mb-2">
-            <span className="text-sm text-muted-foreground">Students Registered</span>
-            <div className="p-2 bg-muted rounded-lg">
-              <Calendar className="w-4 h-4 text-muted-foreground" />
+        <div className="bg-card border border-border rounded-lg p-3 sm:p-4 lg:p-5 cursor-pointer hover:shadow-md transition-shadow">
+          <div className="flex items-start justify-between mb-2 gap-1">
+            <span className="text-xs sm:text-sm text-muted-foreground">Registered</span>
+            <div className="p-1.5 sm:p-2 bg-muted rounded-lg shrink-0">
+              <Calendar className="w-3 h-3 sm:w-4 sm:h-4 text-muted-foreground" />
             </div>
           </div>
-          <p className="text-3xl font-semibold mb-2">
+          <p className="text-2xl sm:text-3xl font-semibold mb-2">
             {getStudentsRegisteredThisRange()}
           </p>
           <div className="flex items-center gap-2">
             <select
               value={timeRange}
               onChange={(e) => setTimeRange(e.target.value)}
-              className="text-xs font-medium bg-muted border border-border rounded px-2 py-1 cursor-pointer"
+              className="text-xs font-medium bg-muted border border-border rounded px-2 py-1 cursor-pointer w-full"
             >
               <option value="day">Day</option>
               <option value="week">Week</option>
@@ -141,7 +102,7 @@ export function DashboardClient({ initialStudents }: DashboardClientProps) {
       {/* Bottom Row - Student Table */}
       <div className="grid grid-cols-1 gap-4">
         <div className="h-full">
-          <HomeStudents initialStudents={students} />
+          <HomeStudents />
         </div>
       </div>
     </>
