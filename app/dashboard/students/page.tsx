@@ -33,7 +33,7 @@ export default function StudentsPage() {
   const [isConnected, setIsConnected] = useState(false)
   const [isLoading, setIsLoading] = useState(true)
   const [currentPage, setCurrentPage] = useState(1)
-  const studentsPerPage = 6
+  const studentsPerPage = 10
 
   useEffect(() => {
     async function fetchStudents() {
