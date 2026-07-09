@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect, useCallback } from "react"
+import { useState, useEffect, useCallback, useRef } from "react"
 import { PageHeader } from "@/components/dashboard/layout/page-header"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
@@ -34,6 +34,7 @@ export default function StudentsPage() {
   const [isLoading, setIsLoading] = useState(true)
   const [currentPage, setCurrentPage] = useState(1)
   const studentsPerPage = 10
+  const dropdownRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
     async function fetchStudents() {
@@ -86,6 +87,22 @@ export default function StudentsPage() {
     onError: () => setIsConnected(false),
     enabled: true,
   })
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setOpenDropdown(null)
+      }
+    }
+
+    if (openDropdown) {
+      document.addEventListener("mousedown", handleClickOutside)
+    }
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside)
+    }
+  }, [openDropdown])
 
   const updatePaymentStatus = async (studentId: string, status: string) => {
     const prevStudents = [...students]
@@ -256,7 +273,7 @@ export default function StudentsPage() {
                           {new Date(student.dateJoined).toLocaleString('en-NG', { hour: 'numeric', minute: '2-digit', hour12: true, timeZone: 'Africa/Lagos' })}
                         </p>
                       </td>
-                      <td className="py-3 px-2 relative">
+                      <td className="py-3 px-2 relative" ref={openDropdown === student.id ? dropdownRef : null}>
                         <button
                           onClick={() => setOpenDropdown(openDropdown === student.id ? null : student.id)}
                           className={`inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium ${getPaymentColor(student.paymentStatus)}`}
@@ -270,7 +287,10 @@ export default function StudentsPage() {
                               {PAYMENT_OPTIONS.map((status) => (
                                 <button
                                   key={status}
-                                  onClick={() => updatePaymentStatus(student.id, status)}
+                                  onClick={() => {
+                                    setOpenDropdown(null)
+                                    updatePaymentStatus(student.id, status)
+                                  }}
                                   className="block w-full text-left px-4 py-2 text-xs hover:bg-muted"
                                 >
                                   <span className="inline-flex items-center gap-2">
@@ -326,7 +346,7 @@ export default function StudentsPage() {
                         {new Date(student.dateJoined).toLocaleString('en-NG', { hour: 'numeric', minute: '2-digit', hour12: true, timeZone: 'Africa/Lagos' })}
                       </p>
                       <div className="flex items-center gap-2 mt-2">
-                        <div className="relative">
+                        <div className="relative" ref={openDropdown === `mobile-${student.id}` ? dropdownRef : null}>
                           <button
                             onClick={() => setOpenDropdown(openDropdown === `mobile-${student.id}` ? null : `mobile-${student.id}`)}
                             className={`inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium ${getPaymentColor(student.paymentStatus)}`}
@@ -340,7 +360,10 @@ export default function StudentsPage() {
                                 {PAYMENT_OPTIONS.map((status) => (
                                   <button
                                     key={status}
-                                    onClick={() => updatePaymentStatus(student.id, status)}
+                                    onClick={() => {
+                                      setOpenDropdown(null)
+                                      updatePaymentStatus(student.id, status)
+                                    }}
                                     className="block w-full text-left px-4 py-2 text-xs hover:bg-muted"
                                   >
                                     <span className="inline-flex items-center gap-2">
