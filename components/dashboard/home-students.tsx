@@ -2,40 +2,22 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { ChevronDown } from "lucide-react"
-import { useEffect, useState, useCallback } from "react"
+import { useState, useCallback } from "react"
 import type { Student } from "@/lib/types/student"
 import { useSSE } from "@/hooks/use-sse"
 
-export function HomeStudents() {
+interface HomeStudentsProps {
+  initialStudents?: Student[]
+}
+
+export function HomeStudents({ initialStudents = [] }: HomeStudentsProps) {
   const [courseFilter, setCourseFilter] = useState("")
   const [paymentFilter, setPaymentFilter] = useState("")
-  const [students, setStudents] = useState<Student[]>([])
+  const [students, setStudents] = useState<Student[]>(initialStudents)
   const [openDropdown, setOpenDropdown] = useState<number | null>(null)
   const [isConnected, setIsConnected] = useState(false)
-  const [isLoading, setIsLoading] = useState(true)
 
-  // Initial fetch
-  useEffect(() => {
-    async function fetchStudents() {
-      try {
-        setIsLoading(true)
-        const response = await fetch("/api/students")
-        const result = await response.json()
-
-        if (result.success) {
-          setStudents(result.data)
-        }
-      } catch (error) {
-        console.error("Failed to fetch students:", error)
-      } finally {
-        setIsLoading(false)
-      }
-    }
-
-    fetchStudents()
-  }, [])
-
-  // SSE event handler
+  // SSE event handler — only handles real-time updates
   const handleSSEMessage = useCallback((event: MessageEvent) => {
     try {
       const message = JSON.parse(event.data)
@@ -178,10 +160,14 @@ export function HomeStudents() {
                 </tr>
               </thead>
               <tbody>
-                {isLoading ? (
+                {filteredStudents.length === 0 ? (
                   <tr>
                     <td colSpan={4} className="py-6 text-center text-xs text-muted-foreground">
-                      Loading students...
+                      {isFilterActive
+                        ? "No students in this category match"
+                        : students.length === 0
+                          ? "No students registered yet."
+                          : "No students in this category match"}
                     </td>
                   </tr>
                 ) : (
@@ -273,13 +259,6 @@ export function HomeStudents() {
                       </td>
                     </tr>
                   ))
-                )}
-                {!isLoading && isFilterActive && filteredStudents.length === 0 && (
-                  <tr>
-                    <td colSpan={4} className="py-6 text-center text-xs text-muted-foreground">
-                      No students in this category match
-                    </td>
-                  </tr>
                 )}
               </tbody>
             </table>
