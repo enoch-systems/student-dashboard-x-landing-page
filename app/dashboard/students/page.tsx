@@ -4,7 +4,7 @@ import { useState, useEffect, useCallback } from "react"
 import { PageHeader } from "@/components/dashboard/layout/page-header"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import { Users, DollarSign, Eye, ChevronDown, X } from "lucide-react"
+import { Users, DollarSign, Eye, ChevronDown, X, ChevronLeft, ChevronRight } from "lucide-react"
 import type { Student } from "@/lib/types/student"
 import { useSSE } from "@/hooks/use-sse"
 
@@ -32,6 +32,8 @@ export default function StudentsPage() {
   const [visiblePanel, setVisiblePanel] = useState(false)
   const [isConnected, setIsConnected] = useState(false)
   const [isLoading, setIsLoading] = useState(true)
+  const [currentPage, setCurrentPage] = useState(1)
+  const studentsPerPage = 6
 
   useEffect(() => {
     async function fetchStudents() {
@@ -118,7 +120,10 @@ export default function StudentsPage() {
     return acc
   }, 0)
 
-  const displayStudents = students
+  const totalPages = Math.ceil(students.length / studentsPerPage)
+  const startIndex = (currentPage - 1) * studentsPerPage
+  const endIndex = startIndex + studentsPerPage
+  const displayStudents = students.slice(startIndex, endIndex)
 
   return (
     <>
@@ -192,9 +197,36 @@ export default function StudentsPage() {
               </thead>
               <tbody>
                 {isLoading ? (
-                  <tr>
-                    <td colSpan={5} className="py-8 text-center text-sm text-muted-foreground">Loading students...</td>
-                  </tr>
+                  <>
+                    {Array.from({ length: 6 }).map((_, i) => (
+                      <tr key={i} className="border-b border-border last:border-0">
+                        <td className="py-3 px-2">
+                          <div className="flex items-center gap-3">
+                            <div className="w-8 h-8 rounded-full bg-muted animate-pulse" />
+                            <div className="space-y-2">
+                              <div className="h-4 w-32 bg-muted animate-pulse rounded" />
+                              <div className="h-3 w-40 bg-muted animate-pulse rounded" />
+                            </div>
+                          </div>
+                        </td>
+                        <td className="py-3 px-2">
+                          <div className="h-4 w-24 bg-muted animate-pulse rounded" />
+                        </td>
+                        <td className="py-3 px-2">
+                          <div className="space-y-2">
+                            <div className="h-4 w-28 bg-muted animate-pulse rounded" />
+                            <div className="h-3 w-20 bg-muted animate-pulse rounded" />
+                          </div>
+                        </td>
+                        <td className="py-3 px-2">
+                          <div className="h-6 w-24 bg-muted animate-pulse rounded-full" />
+                        </td>
+                        <td className="py-3 px-2">
+                          <div className="h-8 w-16 bg-muted animate-pulse rounded" />
+                        </td>
+                      </tr>
+                    ))}
+                  </>
                 ) : displayStudents.length === 0 ? (
                   <tr>
                     <td colSpan={5} className="py-8 text-center text-sm text-muted-foreground">
@@ -340,6 +372,58 @@ export default function StudentsPage() {
             )}
           </div>
         </CardContent>
+        {totalPages > 1 && (
+          <div className="flex items-center justify-end gap-2 px-3 sm:px-6 pb-3">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
+              disabled={currentPage === 1}
+              className="h-8 px-3 text-xs"
+            >
+              <ChevronLeft className="w-4 h-4 mr-1" />
+              Previous
+            </Button>
+            
+            <div className="flex items-center gap-1">
+              {Array.from({ length: Math.min(totalPages, 4) }, (_, i) => {
+                let pageNum: number
+                if (totalPages <= 4) {
+                  pageNum = i + 1
+                } else if (currentPage <= 2) {
+                  pageNum = i + 1
+                } else if (currentPage >= totalPages - 1) {
+                  pageNum = totalPages - 3 + i
+                } else {
+                  pageNum = currentPage - 1 + i
+                }
+                
+                return (
+                  <Button
+                    key={pageNum}
+                    variant={currentPage === pageNum ? "default" : "outline"}
+                    size="sm"
+                    onClick={() => setCurrentPage(pageNum)}
+                    className="h-8 w-8 p-0 text-xs"
+                  >
+                    {pageNum}
+                  </Button>
+                )
+              })}
+            </div>
+
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
+              disabled={currentPage === totalPages}
+              className="h-8 px-3 text-xs"
+            >
+              Next
+              <ChevronRight className="w-4 h-4 ml-1" />
+            </Button>
+          </div>
+        )}
       </Card>
 
       {/* Student Details Slide-out Panel - responsive */}
