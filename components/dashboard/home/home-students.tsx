@@ -2,14 +2,16 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { ChevronDown } from "lucide-react"
-import { useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import { useStudents } from "@/contexts/students-context"
 
 export function HomeStudents() {
   const [courseFilter, setCourseFilter] = useState("")
   const [paymentFilter, setPaymentFilter] = useState("")
   const [openDropdown, setOpenDropdown] = useState<string | null>(null)
+  const [visibleDropdown, setVisibleDropdown] = useState<string | null>(null)
   const { students, isConnected, updatePaymentStatus } = useStudents()
+  const dropdownRef = useRef<HTMLDivElement>(null)
 
   const getPaymentColor = (status: string) => {
     switch (status) {
@@ -39,6 +41,32 @@ export function HomeStudents() {
   })
 
   const isFilterActive = courseFilter || paymentFilter
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setOpenDropdown(null)
+        setVisibleDropdown(null)
+      }
+    }
+
+    if (openDropdown) {
+      document.addEventListener("mousedown", handleClickOutside)
+    }
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside)
+    }
+  }, [openDropdown])
+
+  useEffect(() => {
+    if (openDropdown) {
+      setVisibleDropdown(openDropdown)
+    } else {
+      const timer = setTimeout(() => setVisibleDropdown(null), 200)
+      return () => clearTimeout(timer)
+    }
+  }, [openDropdown])
 
   return (
     <Card className="bg-card border-border h-full">
@@ -127,28 +155,36 @@ export function HomeStudents() {
                         {student.paymentStatus}
                         <ChevronDown className="w-3 h-3" />
                       </button>
-                      {openDropdown === student.id && (
-                        <div className="absolute z-10 mt-1 w-48 bg-card border border-border rounded-md shadow-lg right-0">
-                          <div className="py-1">
-                            {["Fully Paid", "1st Installment", "2nd Installment", "Not paid"].map((status) => (
+                      <div 
+                        ref={visibleDropdown === student.id ? dropdownRef : null}
+                        className={`absolute ${filteredStudents.findIndex(s => s.id === student.id) < 3 ? "top-full mt-1" : "bottom-full mb-1"} right-0 z-[1000000] w-48 bg-card border border-border rounded-md shadow-lg transition-all duration-200 ease-out ${
+                          visibleDropdown === student.id
+                            ? "opacity-100 scale-100 translate-y-0"
+                            : `opacity-0 pointer-events-none scale-95 ${filteredStudents.findIndex(s => s.id === student.id) < 3 ? "translate-y-[-4px]" : "translate-y-[4px]"}`
+                        }`}
+                      >
+                        <div className="py-1">
+                          {["Fully Paid", "1st Installment", "2nd Installment", "Not paid"].map((status) => (
                               <button
                                 key={status}
-                                onClick={() => updatePaymentStatus(student.id, status)}
+                                onClick={() => {
+                                  setOpenDropdown(null);
+                                  updatePaymentStatus(student.id, status);
+                                }}
                                 className="block w-full text-left px-4 py-2 text-xs hover:bg-muted"
                               >
-                                <span className="inline-flex items-center gap-2">
-                                  <span className={`w-2 h-2 rounded-full ${
-                                    status === "Fully Paid" ? "bg-green-500" :
-                                    status === "1st Installment" ? "bg-yellow-500" :
-                                    status === "2nd Installment" ? "bg-blue-500" : "bg-red-500"
-                                  }`} />
-                                  {status === "Not paid" ? "Not Paid" : status}
-                                </span>
-                              </button>
-                            ))}
-                          </div>
+                              <span className="inline-flex items-center gap-2">
+                                <span className={`w-2 h-2 rounded-full ${
+                                  status === "Fully Paid" ? "bg-green-500" :
+                                  status === "1st Installment" ? "bg-yellow-500" :
+                                  status === "2nd Installment" ? "bg-blue-500" : "bg-red-500"
+                                }`} />
+                                {status === "Not paid" ? "Not Paid" : status}
+                              </span>
+                            </button>
+                          ))}
                         </div>
-                      )}
+                      </div>
                     </td>
                   </tr>
                 ))
@@ -202,28 +238,36 @@ export function HomeStudents() {
                       <span className="truncate max-w-[70px]">{student.paymentStatus}</span>
                       <ChevronDown className="w-3 h-3 shrink-0" />
                     </button>
-                    {openDropdown === `mobile-${student.id}` && (
-                      <div className="absolute z-10 mt-1 w-44 bg-card border border-border rounded-md shadow-lg right-0">
-                        <div className="py-1">
-                          {["Fully Paid", "1st Installment", "2nd Installment", "Not paid"].map((status) => (
-                            <button
-                              key={status}
-                              onClick={() => updatePaymentStatus(student.id, status)}
-                              className="block w-full text-left px-4 py-2 text-xs hover:bg-muted"
-                            >
-                              <span className="inline-flex items-center gap-2">
-                                <span className={`w-2 h-2 rounded-full ${
-                                  status === "Fully Paid" ? "bg-green-500" :
-                                  status === "1st Installment" ? "bg-yellow-500" :
-                                  status === "2nd Installment" ? "bg-blue-500" : "bg-red-500"
-                                }`} />
-                                {status === "Not paid" ? "Not Paid" : status}
-                              </span>
-                            </button>
-                          ))}
-                        </div>
+                    <div 
+                      ref={visibleDropdown === `mobile-${student.id}` ? dropdownRef : null}
+                      className={`absolute ${filteredStudents.findIndex(s => s.id === student.id) < 3 ? "top-full mt-1" : "bottom-full mb-1"} right-0 z-[1000000] w-44 bg-card border border-border rounded-md shadow-lg transition-all duration-200 ease-out ${
+                        visibleDropdown === `mobile-${student.id}`
+                          ? "opacity-100 scale-100 translate-y-0"
+                          : `opacity-0 pointer-events-none scale-95 ${filteredStudents.findIndex(s => s.id === student.id) < 3 ? "translate-y-[-4px]" : "translate-y-[4px]"}`
+                      }`}
+                    >
+                      <div className="py-1">
+                        {["Fully Paid", "1st Installment", "2nd Installment", "Not paid"].map((status) => (
+                          <button
+                            key={status}
+                            onClick={() => {
+                              setOpenDropdown(null);
+                              updatePaymentStatus(student.id, status);
+                            }}
+                            className="block w-full text-left px-4 py-2 text-xs hover:bg-muted"
+                          >
+                            <span className="inline-flex items-center gap-2">
+                              <span className={`w-2 h-2 rounded-full ${
+                                status === "Fully Paid" ? "bg-green-500" :
+                                status === "1st Installment" ? "bg-yellow-500" :
+                                status === "2nd Installment" ? "bg-blue-500" : "bg-red-500"
+                              }`} />
+                              {status === "Not paid" ? "Not Paid" : status}
+                            </span>
+                          </button>
+                        ))}
                       </div>
-                    )}
+                    </div>
                   </div>
                 </div>
               </div>
