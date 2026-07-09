@@ -1,6 +1,6 @@
 "use client"
 
-import { PageHeader } from "@/components/dashboard/page-header"
+import { PageHeader } from "@/components/dashboard/layout/page-header"
 
 export default function EmailPage() {
   return (

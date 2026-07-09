@@ -1,5 +1,5 @@
 import type { ReactNode } from "react"
-import { Header } from "@/components/dashboard/header"
+import { Header } from "@/components/dashboard/layout/header"
 import { ThemeProvider } from "@/components/theme-provider"
 import { StudentsProvider } from "@/contexts/students-context"
 

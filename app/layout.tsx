@@ -2,7 +2,6 @@ import React from "react"
 import type { Metadata } from 'next'
 import { Instrument_Sans, Instrument_Serif, JetBrains_Mono } from 'next/font/google'
 import { Analytics } from '@vercel/analytics/next'
-import { StudentsProvider } from "@/contexts/students-context"
 import './globals.css'
 
 const instrumentSans = Instrument_Sans({

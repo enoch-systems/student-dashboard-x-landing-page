@@ -1,5 +1,5 @@
 import { prisma } from "@/lib/prisma"
-import { DashboardClient } from "@/components/dashboard/dashboard-client"
+import { DashboardClient } from "@/components/dashboard/home/dashboard-client"
 
 export const dynamic = "force-dynamic"
 

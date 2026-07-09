@@ -1,8 +1,8 @@
 "use client"
 
-import { MetricCard } from "@/components/dashboard/metric-card"
-import { PageHeader } from "@/components/dashboard/page-header"
-import { HomeStudents } from "@/components/dashboard/home-students"
+import { MetricCard } from "@/components/dashboard/home/metric-card"
+import { PageHeader } from "@/components/dashboard/layout/page-header"
+import { HomeStudents } from "@/components/dashboard/home/home-students"
 import { Calendar, DollarSign, Users } from "lucide-react"
 import type { Student } from "@/lib/types/student"
 import { useState, useEffect } from "react"
